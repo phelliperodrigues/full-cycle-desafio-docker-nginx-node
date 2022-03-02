@@ -18,7 +18,8 @@ app.get('/', async (req, res) => {
     const createTable = `CREATE TABLE IF NOT EXISTS people (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL);`
     connection.query(createTable);
 
-    await newFunction();
+    // await addMultiplePeople();
+    await addPeople();
 
     const getUsersQuery = `SELECT id, name FROM people`;
     connection.query(getUsersQuery, (error, results, fields) => {
@@ -36,7 +37,16 @@ app.get('/', async (req, res) => {
     });
     connection.end();
 
-    async function newFunction() {
+    async function addPeople() {
+        const RANDOM = Math.floor(Math.random() * 10);
+        const response = await axios.get('https://swapi.dev/api/people');
+        const personName = response.data.results[RANDOM].name;
+        console.log('Insert People : ' + personName)
+        const insertQuery = `INSERT INTO people(name) values('${personName}')`;
+        connection.query(insertQuery);
+    }
+
+    async function addMultiplePeople() {
 
         const deleteQuery = `DELETE FROM people WHERE name is not null`;
             connection.query(deleteQuery);
